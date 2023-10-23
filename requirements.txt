@@ -19,7 +19,6 @@ PySocks
 requests
 ruamel.yaml
 tqdm
-truststore
 urllib3
 win-inet-pton
 zstandard
