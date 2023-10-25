@@ -184,6 +184,11 @@ body {
     border-color: #ad5e25 !important;
     color: white !important;
   }
+  &:disabled {
+    background-color: #3e1e0f !important;
+    border-color: #71351c !important;
+    color: rgb(153, 153, 153) !important;
+  }
 }
 
 .button_wrapper {

@@ -447,7 +447,12 @@ function GraphComponent() {
           </div>
           <div className="right">
             <div>
-              <Select onChange={handleGraphSelect} value={selectedGraph} open>
+              <Select
+                onChange={handleGraphSelect}
+                value={selectedGraph}
+                open
+                disabled={running}
+              >
                 {graphList.map((graph) => (
                   <Select.Option
                     key={graph}
