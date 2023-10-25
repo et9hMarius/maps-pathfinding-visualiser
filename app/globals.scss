@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* change css of svg circle */
+.graphs_wrapper {
+  position: relative;
+
+  svg {
+    // make hitbox bigger
+    circle {
+      stroke-width: 30px;
+      stroke-opacity: 0;
+      r: 1;
+    }
+  }
+  .current_graph {
+    svg .selectable:hover {
+      r: 10;
+      fill: #71351c;
+      opacity: 1;
+      -webkit-filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+    }
+
+    svg .selected {
+      r: 10;
+      fill: #ad5e25;
+      opacity: 1;
+    }
+
+    svg .visited {
+      //make green
+      //glow
+      -webkit-filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.5));
+
+      r: 2;
+      opacity: 1;
+      animation: fadein 0.5s ease-in-out forwards;
+    }
+
+    svg .shortest_path {
+      r: 2;
+      opacity: 1;
+      fill: #ffde19;
+    }
+
+    svg .shortest_path_line {
+      stroke-width: 4px;
+      opacity: 1;
+      stroke: #ffde19;
+      opacity: 1;
+
+      //glow
+      -webkit-filter: drop-shadow(0px 0px 5px #ffde19);
+      filter: drop-shadow(0px 0px 5px #ffde19);
+    }
+
+    svg .visited_line {
+      stroke-width: 2px;
+
+      opacity: 1;
+      animation: fadein 0.5s ease-in-out forwards;
+    }
+
+    @keyframes fadein {
+      0% {
+        fill: #91421a;
+        stroke: #91421a;
+        opacity: 0;
+      }
+
+      50% {
+        fill: #b86321;
+        stroke: #b86321;
+        opacity: 0.5;
+      }
+
+      100% {
+        fill: #ffde19;
+        stroke: #ffde19;
+        stroke-width: 4px;
+
+        opacity: 1;
+
+        //glow
+        -webkit-filter: drop-shadow(0px 0px 5px #ffde19);
+        filter: drop-shadow(0px 0px 5px #ffde19);
+      }
+    }
+  }
+}
+body {
+  position: relative;
+  font-family: "Roboto", sans-serif;
+  //slightly faded white
+  color: #f2f2f2;
+  min-height: 100vh;
+  background-color: #1f090f;
+}
+
+.loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #080204c6;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+  .middle {
+    .graphs_wrapper {
+      box-shadow: 0 0 10px #4c2118;
+      margin: 0 10px;
+    }
+  }
+  .right {
+    width: 30%;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  .left {
+    width: 30%;
+    margin: 0 10px;
+  }
+}
+
+.title {
+  background-color: #1f090f;
+  font-size: 2rem;
+  width: 100vw;
+  text-align: center;
+  padding: 10px 0;
+  span:hover {
+    color: #ffde19;
+  }
+  span {
+    transition: 0.2s;
+  }
+
+  //unselectable
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+//antd input make bg transparent
+.ant-input {
+  background-color: transparent;
+  color: white;
+}
+
+.ant-form-item-label > label {
+  color: white !important;
+}
+
+.ant-form-item {
+  margin-bottom: 5px;
+}
+
+.ant-btn {
+  background-color: #71351c;
+  border-color: #71351c;
+  color: white;
+  &:hover {
+    background-color: #ad5e25 !important;
+    border-color: #ad5e25 !important;
+    color: white !important;
+  }
+  &:active {
+    background-color: #ffde19 !important;
+    border-color: #ad5e25 !important;
+    color: white !important;
+  }
+}
+
+.button_wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 5px;
+}
+
+.node_wrapper {
+  display: flex;
+  opacity: 0.5;
+  font-size: 0.8rem;
+}
+
+.ant-select {
+  width: min(250px, 100%);
+  margin-bottom: 275px;
+  background-color: #1f090f !important;
+  color: white !important;
+  * {
+    background-color: #1f090f !important;
+    color: white !important;
+  }
+}
+
+.ant-select-dropdown {
+  background-color: #1f090f !important;
+  color: white !important;
+  * {
+    background-color: #1f090f !important;
+    color: white;
+    border: none;
+  }
+}
+
+.light_strike {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  animation: light_strike 1s // fast at start, slow at end
+    cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 500ms;
+  background: white;
+  opacity: 0;
+  z-index: 1000;
+}
+
+@keyframes light_strike {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.75;
+  }
+
+  100% {
+    opacity: 0;
+    z-index: -1;
+  }
+}

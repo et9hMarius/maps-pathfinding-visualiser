@@ -12,6 +12,64 @@ app = FastAPI()
 DATA_FOLDER = "./data/"
 
 
+def astar(graph, start, goal):
+    open_set = [start]
+    closed_set = set()
+    g_score = {node: float('inf') for node in graph.nodes()}
+    g_score[start] = 0
+    f_score = {node: float('inf') for node in graph.nodes()}
+    f_score[start] = heuristic(start, goal, graph)
+    came_from = {}
+    explored_nodes = []
+    explored_links = []
+
+    while open_set:
+        current = min(open_set, key=lambda node: f_score[node])
+        open_set.remove(current)
+        explored_nodes.append(current)
+        explored_links.append(came_from.get(current, None))
+
+        if current == goal:
+            path = reconstruct_path(came_from, current)
+            return explored_nodes, explored_links, path
+
+        closed_set.add(current)
+
+        for neighbor in graph.neighbors(current):
+            if neighbor in closed_set:
+                continue
+
+            tentative_g_score = g_score[current] + \
+                graph[current][neighbor]['length']
+
+            if neighbor not in open_set:
+                open_set.append(neighbor)
+            elif tentative_g_score >= g_score[neighbor]:
+                continue
+
+            came_from[neighbor] = current
+            g_score[neighbor] = tentative_g_score
+            f_score[neighbor] = g_score[neighbor] + \
+                heuristic(neighbor, goal, graph)
+
+    return explored_nodes, explored_links, None
+
+
+def heuristic(node, goal, graph):
+    # Calculate the Euclidean distance as the heuristic
+    x1, y1 = graph.nodes[node]['x'], graph.nodes[node]['y']
+    x2, y2 = graph.nodes[goal]['x'], graph.nodes[goal]['y']
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+
+def reconstruct_path(came_from, current):
+    path = [current]
+    while current in came_from:
+        current = came_from[current]
+        path.append(current)
+    return path[::-1]
+
+
 @app.get("/api/python/graphs")
 def get_graphs():
     # Get the list of graph files
@@ -67,6 +125,29 @@ def get_graph(name):
         data = json.load(f)
         G = json_graph.node_link_graph(data)
 
+    # get smallest x and y for reference
+    smallestX = min([G.nodes[node]["x"] for node in G.nodes()])
+    smallestY = min([G.nodes[node]["y"] for node in G.nodes()])
+
+    biggestX = max([G.nodes[node]["x"] for node in G.nodes()])
+    biggestY = max([G.nodes[node]["y"] for node in G.nodes()])
+
+    # get a suitable distortion factor so that we have values from 0 to 1
+    distortionX = 1 / (biggestX - smallestX)
+    distortionY = 1 / (biggestY - smallestY)
+
+    # change the nodes
+    for node in G.nodes():
+        G.nodes[node]["x"] = (G.nodes[node]["x"] - smallestX) * distortionX
+        G.nodes[node]["y"] = (G.nodes[node]["y"] - smallestY) * distortionY
+
+    # add the node coordinates to the edges
+    for edge in G.edges():
+        G.edges[edge]["x1"] = G.nodes[edge[0]]["x"]
+        G.edges[edge]["y1"] = G.nodes[edge[0]]["y"]
+        G.edges[edge]["x2"] = G.nodes[edge[1]]["x"]
+        G.edges[edge]["y2"] = G.nodes[edge[1]]["y"]
+
     # Return the graph
     return json_graph.node_link_data(G)
 
@@ -90,59 +171,14 @@ def get_path(name, node1, node2):
     node2 = int(node2)
 
     try:
-        # Create dictionaries to track the following:
-        # - Shortest distance from the source node to each node.
-        # - Previous node in the shortest path.
-        shortest_distances = {node: float('inf') for node in G.nodes()}
-        previous_nodes = {node: None for node in G.nodes()}
+        # use a* to get the path step by  step using the function above
+        explored_nodes, explored_links, path = astar(G, node1, node2)
 
-        # Initialize the source node's distance to 0.
-        shortest_distances[node1] = 0
-
-        # Create a set of unvisited nodes.
-        unvisited_nodes = set(G.nodes())
-
-        visited_graph = nx.Graph()
-        previous_node = None
-        while unvisited_nodes:
-            # Select the node with the smallest distance that is still unvisited.
-            current_node = min(
-                unvisited_nodes, key=lambda node: shortest_distances[node])
-
-            # If the current node's distance is infinity, there is no path to node2.
-            if shortest_distances[current_node] == float('inf'):
-                break
-
-            # Update the distances to neighboring nodes.
-            for neighbor in G.neighbors(current_node):
-                tentative_distance = shortest_distances[current_node] + \
-                    G[current_node][neighbor].get("weight", 1)
-                if tentative_distance < shortest_distances[neighbor]:
-                    shortest_distances[neighbor] = tentative_distance
-                    previous_nodes[neighbor] = current_node
-
-            # Mark the current node as visited.
-            unvisited_nodes.remove(current_node)
-
-            # update visited graph
-            visited_graph.add_node(current_node)
-            if previous_node is not None:
-                visited_graph.add_edge(current_node, previous_node)
-            previous_node = current_node
-
-            print(current_node)
-
-        # Reconstruct the shortest path from node2 to node1.
-        path = []
-        current_node = node2
-        while previous_nodes[current_node] is not None:
-            path.insert(0, current_node)
-            current_node = previous_nodes[current_node]
-        path.insert(0, node1)
-
+        # Return the path
         return {
-            "visited_graph": json_graph.node_link_data(visited_graph),
             "path": path,
+            "explored_nodes": explored_nodes,
+            "explored_links": explored_links,
         }
 
     except nx.NetworkXNoPath:
