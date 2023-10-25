@@ -467,24 +467,26 @@ function GraphComponent() {
                   </Select.Option>
                 ))}
               </Select>
+              <div className="node_wrapper">
+                {node1 != 0 && (
+                  <>
+                    <div className="label">Starting point:</div>
+                    <div className="value">{node1}</div>
+                  </>
+                )}
+              </div>
 
-              {node1 != 0 ? (
-                <div className="node_wrapper">
-                  <div className="label">Starting point:</div>
-                  <div className="value">{node1}</div>
-                </div>
-              ) : (
-                <div></div>
-              )}
-
-              {node2 != 0 ? (
-                <div className="node_wrapper">
-                  <div className="label">Destination:</div>
-                  <div className="value">{node2}</div>
-                </div>
-              ) : (
-                <div></div>
-              )}
+              <div className="node_wrapper">
+                {node2 != 0 && (
+                  <>
+                    <div className="label">Ending point:</div>
+                    <div className="value">{node2}</div>
+                  </>
+                )}
+              </div>
+              <div className="copyright">
+                Copyright © {new Date().getFullYear()} Mircioagă Marius
+              </div>
             </div>
           </div>
         </div>
