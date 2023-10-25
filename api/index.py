@@ -1,11 +1,10 @@
+import random
 from fastapi import FastAPI
 from matplotlib import pyplot as plt
 import networkx as nx
 from networkx.readwrite import json_graph
 import os
 import json
-
-import numpy as np
 
 app = FastAPI()
 
@@ -97,8 +96,8 @@ def get_random_points(name):
     nodes = list(G.nodes())
 
     # Pick two random nodes
-    random_nr1 = np.random.randint(0, len(nodes))
-    random_nr2 = np.random.randint(0, len(nodes))
+    random_nr1 = random.randint(0, len(nodes) - 1)
+    random_nr2 = random.randint(0, len(nodes) - 1)
 
     # Get the nodes
     node1 = nodes[random_nr1]
