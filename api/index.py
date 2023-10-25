@@ -1,6 +1,5 @@
 import random
 from fastapi import FastAPI
-from matplotlib import pyplot as plt
 import networkx as nx
 from networkx.readwrite import json_graph
 import os
