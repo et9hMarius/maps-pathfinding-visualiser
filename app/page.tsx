@@ -44,6 +44,7 @@ function GraphComponent() {
 
   // Create D3 container for current graph
   useEffect(() => {
+    setFinished(false);
     if (currentGraph && currentGraphRef.current) {
       setLoading(true);
       currentGraphRef.current.innerHTML = "";
@@ -302,6 +303,7 @@ function GraphComponent() {
   };
 
   const getRandomNodes = () => {
+    setFinished(false);
     if (!selectedGraph) {
       return;
     }
