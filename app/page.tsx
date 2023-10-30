@@ -418,7 +418,6 @@ function GraphComponent() {
                         setNodeStep(-1);
                         setFinished(false);
                         setShortestPath([]);
-                        setCurrentGraph(null);
                         setVisitedNodes(null);
                         setVisitedLinks(null);
                         if (currentGraphRef.current) {
