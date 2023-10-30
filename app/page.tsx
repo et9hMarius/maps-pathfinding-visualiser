@@ -37,6 +37,7 @@ function GraphComponent() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [running, setRunning] = useState<boolean>(false);
+  const [finished, setFinished] = useState<boolean>(false);
 
   const currentGraphRef = useRef<SVGSVGElement | null>(null);
   const strikeRef = useRef<HTMLDivElement | null>(null);
@@ -259,6 +260,7 @@ function GraphComponent() {
                   .raise();
               }
               setRunning(false);
+              setFinished(true);
               //strikeref className="light_strike"
               if (strikeRef.current) {
                 strikeRef.current.className = "";
@@ -406,9 +408,32 @@ function GraphComponent() {
 
             {node1 != 0 && node2 != 0 && (
               <div className="button_wrapper">
-                <Button disabled={running} onClick={findShortestPath}>
-                  START 💫
-                </Button>
+                {finished ? (
+                  <>
+                    <Button
+                      disabled={running}
+                      onClick={() => {
+                        setNode1(0);
+                        setNode2(0);
+                        setNodeStep(-1);
+                        setFinished(false);
+                        setShortestPath([]);
+                        setCurrentGraph(null);
+                        setVisitedNodes(null);
+                        setVisitedLinks(null);
+                        if (currentGraphRef.current) {
+                          currentGraphRef.current.innerHTML = "";
+                        }
+                      }}
+                    >
+                      GO AGAIN 🏹
+                    </Button>
+                  </>
+                ) : (
+                  <Button disabled={running} onClick={findShortestPath}>
+                    START 💫
+                  </Button>
+                )}
               </div>
             )}
           </div>
